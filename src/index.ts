@@ -7,7 +7,6 @@ import express, {
 import envConfig, { PORT } from "./config/env.js";
 import { setupDatabase } from "./database/setup.js";
 import { NODE_ENV } from "./schemas/env.js";
-import pool from "./config/db.js";
 
 const app: Application = express();
 
@@ -17,10 +16,6 @@ app.use(express.json());
 const startServer = async () => {
   try {
     await setupDatabase();
-
-    const { rows } = await pool.query(`SELECT * FROM users;`);
-
-    console.log(rows);
 
     app.get("/", (_req: Request, res: Response) => {
       res.send({

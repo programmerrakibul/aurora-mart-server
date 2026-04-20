@@ -1,16 +1,11 @@
 import pool from "@/config/db.js";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import fs from "fs";
+import path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const initSqlPath = path.join(__dirname, "schema", "init.sql");
+const initSqlPath = path.join(import.meta.dirname, "schema", "init.sql");
 
 export const setupDatabase = async (): Promise<void> => {
   try {
-    console.log(initSqlPath);
     const sql = fs.readFileSync(initSqlPath, "utf8");
 
     await pool.query(sql);
