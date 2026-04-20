@@ -9,6 +9,7 @@ import { setupDatabase } from "./database/setup.js";
 import { NODE_ENV } from "./schemas/env.js";
 import { mountRoutes } from "./routes/index.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
+import type { TErrorResponse, TSuccessResponse } from "./types/index.js";
 
 const app: Application = express();
 
@@ -21,14 +22,14 @@ const startServer = async () => {
 
     mountRoutes(app);
 
-    app.get("/", (_req: Request, res: Response) => {
+    app.get("/", (_req: Request, res: Response<TSuccessResponse>) => {
       res.send({
         success: true,
         message: "Welcome to Aurora Mart API!",
       });
     });
 
-    app.use((_req: Request, res: Response) => {
+    app.use((_req: Request, res: Response<TErrorResponse>) => {
       res.status(404).send({
         success: false,
         message: "Route not found!",

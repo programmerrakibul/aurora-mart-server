@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS users (
   uid UUID PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
   name VARCHAR(150) NOT NULL,
-  email VARCHAR(255) CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$') UNIQUE,
+  email VARCHAR(255) CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$') UNIQUE NOT NULL,
   gender VARCHAR(8) CHECK (gender IN ('Male', 'Female')) NOT NULL,
   password VARCHAR(255) NOT NULL,
   role VARCHAR(8) CHECK (role IN ('CUSTOMER', 'SELLER', 'MANAGER')) DEFAULT 'CUSTOMER' NOT NULL,
