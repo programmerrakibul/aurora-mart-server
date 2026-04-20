@@ -7,6 +7,8 @@ import express, {
 import envConfig, { PORT } from "./config/env.js";
 import { setupDatabase } from "./database/setup.js";
 import { NODE_ENV } from "./schemas/env.js";
+import { mountRoutes } from "./routes/index.js";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
 
 const app: Application = express();
 
@@ -16,6 +18,8 @@ app.use(express.json());
 const startServer = async () => {
   try {
     await setupDatabase();
+
+    mountRoutes(app);
 
     app.get("/", (_req: Request, res: Response) => {
       res.send({
@@ -30,6 +34,8 @@ const startServer = async () => {
         message: "Route not found!",
       });
     });
+
+    app.use(globalErrorHandler);
 
     if (envConfig.NODE_ENV === NODE_ENV.DEVELOPMENT) {
       app.listen(PORT, () => {
