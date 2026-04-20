@@ -4,27 +4,50 @@ import express, {
   type Request,
   type Response,
 } from "express";
+import envConfig, { PORT } from "./config/env.js";
+import { setupDatabase } from "./database/setup.js";
+import { NODE_ENV } from "./schemas/env.js";
+import pool from "./config/db.js";
 
 const app: Application = express();
-const PORT = Number(process.env.PORT) || 8000;
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-app.get("/", (_req: Request, res: Response) => {
-  res.send({
-    success: true,
-    message: "Welcome to Aurora Mart API!",
-  });
-});
+const startServer = async () => {
+  try {
+    await setupDatabase();
 
-app.use((_req: Request, res: Response) => {
-  res.status(404).send({
-    success: false,
-    message: "Route not found!",
-  });
-});
+    const { rows } = await pool.query(`SELECT * FROM users;`);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+    console.log(rows);
+
+    app.get("/", (_req: Request, res: Response) => {
+      res.send({
+        success: true,
+        message: "Welcome to Aurora Mart API!",
+      });
+    });
+
+    app.use((_req: Request, res: Response) => {
+      res.status(404).send({
+        success: false,
+        message: "Route not found!",
+      });
+    });
+
+    if (envConfig.NODE_ENV === NODE_ENV.DEVELOPMENT) {
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    }
+  } catch (error: unknown) {
+    console.error("Failed to start server:", (error as Error).message);
+
+    if (envConfig.NODE_ENV === NODE_ENV.DEVELOPMENT) {
+      process.exit(1);
+    }
+  }
+};
+
+startServer();

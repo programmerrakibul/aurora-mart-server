@@ -9,14 +9,20 @@ export const NODE_ENV = {
 export const envSchema = z.object({
   NODE_ENV: z
     .enum<TNodeEnv[]>(Object.values(NODE_ENV), "Invalid NODE_ENV value!")
+    .optional()
     .default(NODE_ENV.DEVELOPMENT),
-  PGUSER: z.string("Invalid PGUSER value!").min(1, "PGUSER cannot be empty!"),
-  PGPASSWORD: z
-    .string("Invalid PGPASSWORD value!")
-    .min(1, "PGPASSWORD cannot be empty!"),
-  PGHOST: z.string("Invalid PGHOST value!").default("localhost"),
-  PGPORT: z.number("Invalid PGPORT value!").default(5432),
-  PGDATABASE: z.string("Invalid PGDATABASE value!"),
+  DB_USER: z.string("Invalid DB_USER value!").default("postgres"),
+  DB_PASSWORD: z
+    .string("Invalid DB_PASSWORD value!")
+    .min(1, "DB_PASSWORD cannot be empty!"),
+  DB_HOST: z.string("Invalid DB_HOST value!").default("localhost"),
+  DB_PORT: z.coerce.number("Invalid DB_PORT value!").default(5432),
+  DB_NAME: z.string("Invalid DB_NAME value!"),
+  PORT: z.coerce
+    .number("Invalid PORT value!")
+    .positive("PORT value must be a positive number!")
+    .optional()
+    .default(8000),
 });
 
 export type TNodeEnv = (typeof NODE_ENV)[keyof typeof NODE_ENV];
