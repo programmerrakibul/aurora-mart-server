@@ -1,7 +1,7 @@
 {
-  "name": "aurora-mart",
+  "name": "auroramart-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a server for AuroraMart, an e-commerce platform. It provides APIs for user authentication, product management, and order processing.",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
@@ -9,7 +9,13 @@
     "dev": "tsx watch src/index.ts",
     "clean": "rm -rf dist"
   },
-  "keywords": [],
+  "keywords": [
+    "e-commerce",
+    "server",
+    "api",
+    "nodejs",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
