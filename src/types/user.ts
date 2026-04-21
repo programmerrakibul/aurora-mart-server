@@ -1,8 +1,9 @@
-import type { TCreateUser } from "@/schemas/user.js";
+import type { TCreateUser, TUserRole } from "@/schemas/user.js";
 
 export type TUser = Omit<TCreateUser, "password"> & {
   uid: string;
   password?: string;
+  role: TUserRole;
   createdAt: Date;
   updatedAt: Date;
 };

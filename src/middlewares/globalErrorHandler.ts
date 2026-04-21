@@ -1,3 +1,5 @@
+import { ApiError } from "@/utils/error.js";
+
 import type { TErrorResponse } from "@/types/index.js";
 import type { Response, Request, NextFunction } from "express";
 
@@ -9,16 +11,19 @@ export const globalErrorHandler = (
 ) => {
   let statusCode = 500;
   let message = "An unexpected error occurred!";
+  let details: unknown = undefined;
 
-  if (err instanceof Error) {
+  console.error(err);
+
+  if (err instanceof ApiError) {
     message = err.message;
+    statusCode = err.statusCode;
+    details = err.details;
   }
 
-  res
-    .status(statusCode)
-    .send({
-      success: false,
-      message,
-      details: (err as { details?: unknown }).details,
-    });
+  res.status(statusCode).send({
+    success: false,
+    message,
+    details,
+  });
 };

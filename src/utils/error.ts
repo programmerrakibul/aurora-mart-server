@@ -1,60 +1,65 @@
 export class ApiError extends Error {
   statusCode: number;
-  constructor(message: string, name: string, statusCode: number) {
+  details?: unknown;
+  constructor(
+    message: string,
+    name: string,
+    statusCode: number,
+    details?: unknown,
+  ) {
     super(message);
     this.statusCode = statusCode;
     this.name = name;
+    this.details = details;
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 }
 
 export class BadRequestError extends ApiError {
-  constructor(message: string = "Bad Request!") {
-    super(message, "BadRequestError", 400);
+  constructor(message: string = "Bad Request!", details?: unknown) {
+    super(message, "BadRequestError", 400, details);
     Object.setPrototypeOf(this, BadRequestError.prototype);
   }
 }
 
 export class NotFoundError extends ApiError {
-  constructor(message: string = "Resource Not Found!") {
-    super(message, "NotFoundError", 404);
+  constructor(message: string = "Resource Not Found!", details?: unknown) {
+    super(message, "NotFoundError", 404, details);
     Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }
 
 export class InternalServerError extends ApiError {
-  constructor(message: string = "Internal Server Error!") {
-    super(message, "InternalServerError", 500);
+  constructor(message: string = "Internal Server Error!", details?: unknown) {
+    super(message, "InternalServerError", 500, details);
     Object.setPrototypeOf(this, InternalServerError.prototype);
   }
 }
 
 export class UnauthorizedError extends ApiError {
-  constructor(message: string = "Unauthorized Access!") {
-    super(message, "UnauthorizedError", 401);
+  constructor(message: string = "Unauthorized Access!", details?: unknown) {
+    super(message, "UnauthorizedError", 401, details);
     Object.setPrototypeOf(this, UnauthorizedError.prototype);
   }
 }
 
 export class ForbiddenError extends ApiError {
-  constructor(message: string = "Forbidden Access!") {
-    super(message, "ForbiddenError", 403);
+  constructor(message: string = "Forbidden Access!", details?: unknown) {
+    super(message, "ForbiddenError", 403, details);
     Object.setPrototypeOf(this, ForbiddenError.prototype);
   }
 }
 
 export class ConflictError extends ApiError {
-  constructor(message: string = "Conflict Occurred!") {
-    super(message, "ConflictError", 409);
+  constructor(message: string = "Conflict Occurred!", details?: unknown) {
+    super(message, "ConflictError", 409, details);
     Object.setPrototypeOf(this, ConflictError.prototype);
   }
 }
 
 export class ValidationError extends ApiError {
-  details: unknown;
   constructor(message: string = "Validation Failed!", details?: unknown) {
-    super(message, "ValidationError", 422);
-    this.details = details;
+    super(message, "ValidationError", 422, details);
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }

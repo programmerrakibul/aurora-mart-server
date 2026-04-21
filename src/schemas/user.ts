@@ -1,78 +1,97 @@
 import z from "zod";
 
+export const GENDER = {
+  MALE: "Male",
+  FEMALE: "Female",
+} as const;
+
+export type TUserGender = (typeof GENDER)[keyof typeof GENDER];
+
 export const USER_ROLE = {
   CUSTOMER: "CUSTOMER",
   SELLER: "SELLER",
   MANAGER: "MANAGER",
 } as const;
 
-export const createUserSchema = z.object({
-  name: z
-    .string({
-      error: (iss) => {
-        return iss.input === undefined || iss.input === null
-          ? "Name is required!"
-          : "Invalid name value!";
-      },
-    })
-    .trim()
-    .min(1, "Name cannot be empty!")
-    .max(150, "Name cannot exceed 150 characters!"),
-  email: z
-    .email({
-      error: (iss) => {
-        return iss.input === undefined || iss.input === null
-          ? "Email is required!"
-          : "Invalid email value!";
-      },
-    })
-    .trim()
-    .lowercase()
-    .min(1, "Email cannot be empty!")
-    .max(255, "Email cannot exceed 255 characters!"),
-  gender: z
-    .enum(["Male", "Female"], {
-      error: (iss) => {
-        return iss.input === undefined || iss.input === null
-          ? "Gender is required!"
-          : `${iss.input} is not a valid gender!`;
-      },
-    })
-    .transform(
-      (val) => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase(),
-    ),
-  password: z
-    .string({
-      error: (iss) => {
-        return iss.input === undefined || iss.input === null
-          ? "Password is required!"
-          : "Invalid password value!";
-      },
-    })
-    .trim()
-    .min(6, "Password must be at least 6 characters long!")
-    .max(50, "Password cannot exceed 50 characters!"),
-  role: z
-    .enum<TUserRole[]>(Object.values(USER_ROLE), {
-      error: (iss) => {
-        return iss.input === undefined || iss.input === null
-          ? "Role is required!"
-          : `${iss.input} is not a valid role!`;
-      },
-    })
-    .transform((val) => val.toUpperCase())
-    .default(USER_ROLE.CUSTOMER),
-  photoURL: z
-    .url({
-      error: (iss) => {
-        return iss.input === undefined || iss.input === null
-          ? "Photo URL is required!"
-          : "Invalid photo URL value!";
-      },
-    })
-    .default("https://example.com/default-profile.png")
-    .optional(),
+export type TUserRole = (typeof USER_ROLE)[keyof typeof USER_ROLE];
+
+const GenderEnum = z.enum<TUserGender[]>(Object.values(GENDER), {
+  error: (iss) => {
+    return iss.input === undefined || iss.input === null
+      ? "Gender is required!"
+      : `${iss.input} is not a valid gender!`;
+  },
 });
 
-export type TUserRole = (typeof USER_ROLE)[keyof typeof USER_ROLE];
+export const createUserSchema = z.object(
+  {
+    name: z
+      .string({
+        error: (iss) => {
+          return iss.input === undefined || iss.input === null
+            ? "Name is required!"
+            : "Invalid name value!";
+        },
+      })
+      .trim()
+      .min(3, "Name must be at least 3 characters long!")
+      .max(150, "Name cannot exceed 150 characters!"),
+
+    email: z
+      .string({
+        error: (iss) => {
+          return iss.input === undefined || iss.input === null
+            ? "Email is required!"
+            : "Invalid email value!";
+        },
+      })
+      .trim()
+      .lowercase()
+      .email("Invalid email value!")
+      .min(1, "Email cannot be empty!")
+      .max(255, "Email cannot exceed 255 characters!"),
+
+    gender: z.preprocess((val) => {
+      if (typeof val !== "string") return val;
+
+      return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase().trim();
+    }, GenderEnum),
+
+    password: z
+      .string({
+        error: (iss) => {
+          return iss.input === undefined || iss.input === null
+            ? "Password is required!"
+            : "Invalid password value!";
+        },
+      })
+      .min(6, "Password must be at least 6 characters long!")
+      .regex(/[A-Z]/, "Must contain at least one uppercase letter!")
+      .regex(/[a-z]/, "Must contain at least one lowercase letter!")
+      .regex(/[0-9]/, "Must contain at least one number!")
+      .regex(/[^A-Za-z0-9]/, "Must contain at least one special character!")
+      .max(50, "Password cannot exceed 50 characters!"),
+
+    photoURL: z
+      .url({
+        error: (iss) => {
+          return iss.input === undefined || iss.input === null
+            ? "Photo URL is required!"
+            : "Invalid photo URL value!";
+        },
+      })
+      .trim()
+      .lowercase()
+      .default("https://example.com/default-profile.png")
+      .optional(),
+  },
+  {
+    error: (iss) => {
+      return typeof iss.input !== "object"
+        ? "User data is required!"
+        : "Invalid user data!";
+    },
+  },
+);
+
 export type TCreateUser = z.infer<typeof createUserSchema>;
