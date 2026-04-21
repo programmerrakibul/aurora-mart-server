@@ -7,7 +7,18 @@ export const globalErrorHandler = (
   res: Response<TErrorResponse>,
   _next: NextFunction,
 ) => {
-  console.error("Global Error Handler:", err);
+  let statusCode = 500;
+  let message = "An unexpected error occurred!";
 
-  res.status(500).send({ success: false, message: (err as Error).message });
+  if (err instanceof Error) {
+    message = err.message;
+  }
+
+  res
+    .status(statusCode)
+    .send({
+      success: false,
+      message,
+      details: (err as { details?: unknown }).details,
+    });
 };

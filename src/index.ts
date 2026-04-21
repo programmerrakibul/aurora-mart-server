@@ -5,7 +5,6 @@ import express, {
   type Response,
 } from "express";
 import envConfig, { PORT } from "./config/env.js";
-import { setupDatabase } from "./database/setup.js";
 import { NODE_ENV } from "./schemas/env.js";
 import { mountRoutes } from "./routes/index.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
@@ -18,8 +17,6 @@ app.use(express.json());
 
 const startServer = async () => {
   try {
-    await setupDatabase();
-
     mountRoutes(app);
 
     app.get("/", (_req: Request, res: Response<TSuccessResponse>) => {
