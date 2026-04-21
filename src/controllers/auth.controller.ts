@@ -37,6 +37,7 @@ export const postUser = async (
     USER_ROLE.CUSTOMER,
     photoURL,
   ];
+
   const query = `INSERT INTO users (name, email, password, gender, role, photoURL)
     VALUES ($1, $2, $3, $4, $5, $6) RETURNING uid;`;
 

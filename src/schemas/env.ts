@@ -23,6 +23,12 @@ export const envSchema = z.object({
     .positive("PORT value must be a positive number!")
     .optional()
     .default(8000),
+  JWT_SECRET: z
+    .string("Invalid JWT_SECRET value!")
+    .trim()
+    .min(1, "JWT_SECRET cannot be empty!")
+    .min(32, "JWT_SECRET must be at least 32 characters long!")
+    .max(64, "JWT_SECRET cannot exceed 64 characters!"),
 });
 
 export type TNodeEnv = (typeof NODE_ENV)[keyof typeof NODE_ENV];
