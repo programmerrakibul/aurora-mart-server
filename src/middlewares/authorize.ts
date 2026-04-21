@@ -1,0 +1,25 @@
+import type { TUserRole } from "@/schemas/user.js";
+import { ForbiddenError } from "@/utils/error.js";
+import { verifyToken } from "@/utils/jwt.js";
+import type { Request, Response, NextFunction } from "express";
+
+export const authorize = (allowedRoles: TUserRole[]) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      const token = req.cookies.token;
+      const user = await verifyToken(token);
+      allowedRoles = allowedRoles.map((r) => r.toUpperCase()) as TUserRole[];
+
+      if (!allowedRoles.includes(user.role)) {
+        throw new ForbiddenError(
+          "You don't have permission to access this resource!",
+        );
+      }
+
+      req.user = user;
+      next();
+    } catch (error: unknown) {
+      throw error;
+    }
+  };
+};

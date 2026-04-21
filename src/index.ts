@@ -4,6 +4,7 @@ import express, {
   type Request,
   type Response,
 } from "express";
+import cookieParser from "cookie-parser";
 import envConfig, { PORT } from "./config/env.js";
 import { NODE_ENV } from "./schemas/env.js";
 import { mountRoutes } from "./routes/index.js";
@@ -14,6 +15,7 @@ const app: Application = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const startServer = async () => {
   try {

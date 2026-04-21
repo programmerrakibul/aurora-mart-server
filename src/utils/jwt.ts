@@ -1,13 +1,13 @@
 import { JWT_SECRET } from "@/config/env.js";
 import type { JWTUserPayload } from "@/types/user.js";
-import jwt, { TokenExpiredError, type SignOptions } from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import { UnauthorizedError } from "./error.js";
 import pool from "@/config/db.js";
 
-export const generateToken = (
+export const generateToken = async (
   payload: JWTUserPayload,
   expiresIn: SignOptions["expiresIn"] = "15m",
-): string => {
+): Promise<string> => {
   const user = {
     uid: payload.uid,
     email: payload.email,
@@ -21,8 +21,10 @@ export const generateToken = (
   return token;
 };
 
-export const generateRefreshToken = (payload: JWTUserPayload): string => {
-  return generateToken(payload, "7d");
+export const generateRefreshToken = async (
+  payload: JWTUserPayload,
+): Promise<string> => {
+  return await generateToken(payload, "7d");
 };
 
 export const verifyToken = async (token: string): Promise<JWTUserPayload> => {
@@ -42,7 +44,7 @@ export const verifyToken = async (token: string): Promise<JWTUserPayload> => {
 
     return user;
   } catch (error: unknown) {
-    if (error instanceof TokenExpiredError) {
+    if (error instanceof jwt.TokenExpiredError) {
       throw new UnauthorizedError("Token has expired!");
     }
 

@@ -94,4 +94,10 @@ export const createUserSchema = z.object(
   },
 );
 
+export const loginUserSchema = createUserSchema.pick({
+  email: true,
+  password: true,
+});
+
+export type TLoginUser = z.infer<typeof loginUserSchema>;
 export type TCreateUser = z.infer<typeof createUserSchema>;
