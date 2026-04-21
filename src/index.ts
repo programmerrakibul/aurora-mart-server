@@ -7,7 +7,7 @@ import express, {
 import envConfig, { PORT } from "./config/env.js";
 import { NODE_ENV } from "./schemas/env.js";
 import { mountRoutes } from "./routes/index.js";
-import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
+import { globalErrorHandler } from "./middlewares/errorHandler.js";
 import type { TErrorResponse, TSuccessResponse } from "./types/index.js";
 
 const app: Application = express();
