@@ -19,7 +19,7 @@ export const findAllUsers = async (
     success: true,
     message: "All users fetched successfully!",
     total: rowCount || 0,
-    data: rows || [],
+    data: rows,
   });
 };
 
