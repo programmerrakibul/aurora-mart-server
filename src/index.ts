@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-const startServer = async () => {
+const startServer = () => {
   try {
     mountRoutes(app);
 
@@ -52,3 +52,5 @@ const startServer = async () => {
 };
 
 startServer();
+
+export default app;
