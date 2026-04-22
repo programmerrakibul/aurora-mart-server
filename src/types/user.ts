@@ -8,4 +8,4 @@ export type TUser = Omit<TCreateUser, "password"> & {
   updatedAt: Date;
 };
 
-export type JWTUserPayload = Pick<TUser, "uid" | "email" | "role">;
+export type TSessionUser = Pick<TUser, "uid" | "email" | "role">;

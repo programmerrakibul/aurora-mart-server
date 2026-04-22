@@ -9,7 +9,6 @@ import type { TSuccessResponse } from "@/types/index.js";
 import type { TUser } from "@/types/user.js";
 import type { Request, Response } from "express";
 import { UnauthorizedError } from "@/utils/error.js";
-import { generateToken } from "@/utils/jwt.js";
 
 export const findAllUsers = async (
   _req: Request,
@@ -33,7 +32,7 @@ export const getUserProfile = async (
   req: Request,
   res: Response<TSuccessResponse<TUser>>,
 ) => {
-  const { uid } = req.user;
+  const { uid } = req.session.user;
 
   const result = await pool.query<TUser>(
     `SELECT uid, name, email, gender, role, photoURL, createdAt, updatedAt
@@ -98,22 +97,14 @@ export const loginUser = async (
 
   if (!isValidPassword) throw new UnauthorizedError("Invalid credentials!");
 
-  const token = await generateToken({
+  req.session.user = {
     uid: user.uid,
     email: user.email,
     role: user.role,
-  });
+  };
 
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-      sameSite: "strict",
-      path: "/",
-    })
-    .send({
-      success: true,
-      message: "Login successful!",
-    });
+  res.send({
+    success: true,
+    message: "Login successful!",
+  });
 };

@@ -1,10 +1,9 @@
-import type { JWTUserPayload } from "./user.ts";
+import "express-session";
+import type { TSessionUser } from "./user.ts";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user: JWTUserPayload;
-    }
+declare module "express-session" {
+  interface Session {
+    user: TSessionUser;
   }
 }
 

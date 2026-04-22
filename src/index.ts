@@ -4,18 +4,40 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import cookieParser from "cookie-parser";
-import envConfig, { PORT } from "./config/env.js";
+import envConfig, { PORT, SESSION_SECRET } from "./config/env.js";
 import { NODE_ENV } from "./schemas/env.js";
 import { mountRoutes } from "./routes/index.js";
 import { globalErrorHandler } from "./middlewares/errorHandler.js";
 import type { TErrorResponse, TSuccessResponse } from "./types/index.js";
+import session from "express-session";
+import pgSession from "connect-pg-simple";
+import pool from "./config/db.js";
+
+const PostgresStore = pgSession(session);
 
 const app: Application = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
+app.use(
+  session({
+    store: new PostgresStore({
+      pool: pool,
+      createTableIfMissing: true,
+      tableName: "user_session",
+    }),
+    name: "aurora_sid",
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: "/",
+      httpOnly: true,
+      secure: envConfig.NODE_ENV === NODE_ENV.PRODUCTION,
+    },
+  }),
+);
 
 const startServer = () => {
   try {

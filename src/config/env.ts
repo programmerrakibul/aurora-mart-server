@@ -20,7 +20,7 @@ export const {
   DB_PORT,
   DB_NAME,
   PORT,
-  JWT_SECRET
+  SESSION_SECRET,
 } = data;
 
 const envConfig = data;
