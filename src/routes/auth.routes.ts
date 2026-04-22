@@ -2,6 +2,7 @@ import {
   findAllUsers,
   getUserProfile,
   loginUser,
+  logoutUser,
   registerUser,
 } from "@/controllers/auth.controller.js";
 import { authorize } from "@/middlewares/authorize.js";
@@ -22,5 +23,7 @@ authRoutes.get("/profile", authorize(Object.values(USER_ROLE)), getUserProfile);
 authRoutes.post("/register", validate(createUserSchema), registerUser);
 
 authRoutes.post("/login", validate(loginUserSchema), loginUser);
+
+authRoutes.post("/logout", logoutUser);
 
 export default authRoutes;

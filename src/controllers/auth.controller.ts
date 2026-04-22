@@ -108,3 +108,14 @@ export const loginUser = async (
     message: "Login successful!",
   });
 };
+
+export const logoutUser = async (req: Request, res: Response) => {
+  req.session.destroy((err) => {
+    if (err) throw err;
+
+    res.send({
+      success: true,
+      message: "Logout successful!",
+    });
+  });
+};
