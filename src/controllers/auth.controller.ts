@@ -17,7 +17,7 @@ export const findAllUsers = async (
   const { rows, rowCount } = await pool.query<TUser>(
     `SELECT uid, name, email, gender, role, photo_url, created_at, updated_at
       FROM users 
-      ORDER BY createdAt DESC, name ASC;`,
+      ORDER BY created_at DESC, name ASC;`,
   );
 
   res.send({
