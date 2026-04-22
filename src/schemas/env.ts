@@ -9,14 +9,13 @@ export const NODE_ENV = {
 export const envSchema = z.object({
   NODE_ENV: z
     .enum<TNodeEnv[]>(Object.values(NODE_ENV), "Invalid NODE_ENV value!")
-    .optional()
-    .default(NODE_ENV.DEVELOPMENT),
-  DB_USER: z.string("Invalid DB_USER value!").default("postgres"),
+    .optional(),
+  DB_USER: z.string("Invalid DB_USER value!"),
   DB_PASSWORD: z
     .string("Invalid DB_PASSWORD value!")
     .min(1, "DB_PASSWORD cannot be empty!"),
-  DB_HOST: z.string("Invalid DB_HOST value!").default("localhost"),
-  DB_PORT: z.coerce.number("Invalid DB_PORT value!").default(5432),
+  DB_HOST: z.string("Invalid DB_HOST value!"),
+  DB_PORT: z.coerce.number("Invalid DB_PORT value!"),
   DB_NAME: z.string("Invalid DB_NAME value!"),
   PORT: z.coerce
     .number("Invalid PORT value!")

@@ -9,8 +9,6 @@ export const authorize = (allowedRoles: TUserRole[]) => {
 
       if (!user) throw new ForbiddenError("You are not logged in!");
 
-      console.log(req.session.cookie);
-
       allowedRoles = allowedRoles.map((r) => r.toUpperCase() as TUserRole);
 
       if (!allowedRoles.includes(user.role)) {

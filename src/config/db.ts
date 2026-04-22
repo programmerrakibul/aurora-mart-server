@@ -7,6 +7,13 @@ export const pool = new Pool({
   host: envConfig.DB_HOST,
   port: envConfig.DB_PORT,
   database: envConfig.DB_NAME,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  max: 1,
+  idleTimeoutMillis: 0,
+  connectionTimeoutMillis: 5000,
+  allowExitOnIdle: true,
 });
 
 pool.on("error", (err) => {
