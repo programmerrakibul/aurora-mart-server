@@ -19,6 +19,7 @@ const app: Application = express();
 
 app.use(cors());
 app.use(express.json());
+app.set("trust proxy", 1);
 app.use(
   session({
     store: new PostgresStore({
@@ -35,6 +36,7 @@ app.use(
       path: "/",
       httpOnly: true,
       secure: envConfig.NODE_ENV === NODE_ENV.PRODUCTION,
+      sameSite: envConfig.NODE_ENV === NODE_ENV.PRODUCTION ? "none" : "lax",
     },
   }),
 );
