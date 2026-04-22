@@ -72,7 +72,7 @@ export const createUserSchema = z.object(
       .regex(/[^A-Za-z0-9]/, "Must contain at least one special character!")
       .max(50, "Password cannot exceed 50 characters!"),
 
-    photoURL: z
+    photo_url: z
       .url({
         error: (iss) => {
           return iss.input === undefined || iss.input === null

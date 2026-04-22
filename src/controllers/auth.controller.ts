@@ -15,7 +15,7 @@ export const findAllUsers = async (
   res: Response<TSuccessResponse<TUser[]>>,
 ) => {
   const { rows, rowCount } = await pool.query<TUser>(
-    `SELECT uid, name, email, gender, role, photoURL, createdAt, updatedAt
+    `SELECT uid, name, email, gender, role, photo_url, created_at, updated_at
       FROM users 
       ORDER BY createdAt DESC, name ASC;`,
   );
@@ -35,7 +35,7 @@ export const getUserProfile = async (
   const { uid } = req.session.user;
 
   const result = await pool.query<TUser>(
-    `SELECT uid, name, email, gender, role, photoURL, createdAt, updatedAt
+    `SELECT uid, name, email, gender, role, photo_url, created_at, updated_at
       FROM users
       WHERE uid = $1;`,
     [uid],
@@ -56,7 +56,7 @@ export const registerUser = async (
   req: Request<{}, {}, TCreateUser>,
   res: Response<TSuccessResponse<Pick<TUser, "uid">>>,
 ) => {
-  const { name, email, password, gender, photoURL } = req.body;
+  const { name, email, password, gender, photo_url } = req.body;
   const hashedPassword = await hashPassword(password);
   const values = [
     name,
@@ -64,10 +64,10 @@ export const registerUser = async (
     hashedPassword,
     gender,
     USER_ROLE.CUSTOMER,
-    photoURL,
+    photo_url,
   ];
 
-  const query = `INSERT INTO users (name, email, password, gender, role, photoURL)
+  const query = `INSERT INTO users (name, email, password, gender, role, photo_url)
     VALUES ($1, $2, $3, $4, $5, $6) RETURNING uid;`;
 
   const { rows } = await pool.query<Pick<TUser, "uid">>(query, values);

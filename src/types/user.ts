@@ -4,8 +4,8 @@ export type TUser = Omit<TCreateUser, "password"> & {
   uid: string;
   password?: string;
   role: TUserRole;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 };
 
 export type TSessionUser = Pick<TUser, "uid" | "email" | "role">;
