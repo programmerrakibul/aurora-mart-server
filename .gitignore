@@ -32,3 +32,15 @@ coverage/
 *.swp
 *.swo
 .vercel
+
+
+# Prisma
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma

@@ -7,21 +7,26 @@ export const NODE_ENV = {
 } as const;
 
 export const envSchema = z.object({
-  NODE_ENV: z
-    .enum<TNodeEnv[]>(Object.values(NODE_ENV), "Invalid NODE_ENV value!")
-    .optional(),
-  DB_USER: z.string("Invalid DB_USER value!"),
-  DB_PASSWORD: z
-    .string("Invalid DB_PASSWORD value!")
-    .min(1, "DB_PASSWORD cannot be empty!"),
-  DB_HOST: z.string("Invalid DB_HOST value!"),
-  DB_PORT: z.coerce.number("Invalid DB_PORT value!"),
-  DB_NAME: z.string("Invalid DB_NAME value!"),
+  NODE_ENV: z.enum<TNodeEnv[]>(
+    Object.values(NODE_ENV),
+    "Invalid NODE_ENV value!",
+  ),
   PORT: z.coerce
     .number("Invalid PORT value!")
     .positive("PORT value must be a positive number!")
     .optional()
     .default(8000),
+  DATABASE_URL: z
+    .string("Invalid DATABASE_URL value!")
+    .startsWith("postgresql://", "Invalid POSTGRESQL DATABASE_URL value!")
+    .includes("-pooler", "DATABASE_URL must be a pooling connection!")
+    .includes("sslmode=require", "DATABASE_URL must contain -sslmode require!")
+    .includes(".neon.tech", "DATABASE must be a Neon database!"),
+  DIRECT_URL: z
+    .string("Invalid DATABASE_URL value!")
+    .startsWith("postgresql://", "Invalid POSTGRESQL DATABASE_URL value!")
+    .includes("sslmode=require", "DATABASE_URL must contain -sslmode require!")
+    .includes(".neon.tech", "DATABASE must be a Neon database!"),
   SESSION_SECRET: z
     .string("Invalid SESSION_SECRET value!")
     .trim()

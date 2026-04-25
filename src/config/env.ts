@@ -1,15 +1,19 @@
 import { envSchema } from "@/schemas/env.js";
+import { ApiError } from "@/utils/error.js";
 import { config } from "dotenv";
+import z from "zod";
 
 config();
 
-const { success, data, error } = envSchema.safeParse(process.env);
+const result = envSchema.safeParse(process.env);
 
-if (!success) {
-  const errorMessages = error.issues
-    .map((issue) => `${issue.path.join(".")} - ${issue.message}`)
-    .join("\n");
-  throw new Error(`Environment variable validation failed:\n${errorMessages}`);
+if (!result.success) {
+  const name = "ValidationError";
+  const message = "Environment Variable Validation Failed!";
+  const error = z.flattenError(result.error);
+  const fieldErrors = error.fieldErrors;
+
+  throw new ApiError(message, name, 422, fieldErrors);
 }
 
 export const {
@@ -21,7 +25,9 @@ export const {
   DB_NAME,
   PORT,
   SESSION_SECRET,
-} = data;
+  DATABASE_URL,
+  DIRECT_URL,
+} = result.data;
 
-const envConfig = data;
+const envConfig = result.data;
 export default envConfig;

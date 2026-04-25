@@ -10,10 +10,8 @@ import { mountRoutes } from "./routes/index.js";
 import { globalErrorHandler } from "./middlewares/errorHandler.js";
 import type { TErrorResponse, TSuccessResponse } from "./types/index.js";
 import session from "express-session";
-import pgSession from "connect-pg-simple";
-import pool from "./config/db.js";
-
-const PostgresStore = pgSession(session);
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import prisma from "./config/prisma.js";
 
 const app: Application = express();
 
@@ -22,10 +20,10 @@ app.use(express.json());
 app.set("trust proxy", 1);
 app.use(
   session({
-    store: new PostgresStore({
-      pool: pool,
-      createTableIfMissing: true,
-      tableName: "user_session",
+    store: new PrismaSessionStore(prisma as any, {
+      checkPeriod: 2 * 60 * 1000,
+      dbRecordIdIsSessionId: true,
+      ttl: 30 * 24 * 60 * 60,
     }),
     name: "aurora_sid",
     secret: SESSION_SECRET,
@@ -41,7 +39,7 @@ app.use(
   }),
 );
 
-const startServer = () => {
+const startServer = async () => {
   try {
     mountRoutes(app);
 

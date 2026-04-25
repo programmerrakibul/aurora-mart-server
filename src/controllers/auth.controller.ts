@@ -1,30 +1,39 @@
-import pool from "@/config/db.js";
 import { comparePasswords, hashPassword } from "@/utils/password.js";
 import {
   USER_ROLE,
   type TCreateUser,
   type TLoginUser,
+  type TUserRole,
 } from "@/schemas/user.js";
 import type { TSuccessResponse } from "@/types/index.js";
 import type { TUser } from "@/types/user.js";
 import type { Request, Response } from "express";
 import { UnauthorizedError } from "@/utils/error.js";
+import prisma from "@/config/prisma";
 
 export const findAllUsers = async (
   _req: Request,
   res: Response<TSuccessResponse<TUser[]>>,
 ) => {
-  const { rows, rowCount } = await pool.query<TUser>(
-    `SELECT uid, name, email, gender, role, photo_url, created_at, updated_at
-      FROM users 
-      ORDER BY created_at DESC, name ASC;`,
-  );
+  const result = (await prisma.users.findMany({
+    select: {
+      uid: true,
+      name: true,
+      email: true,
+      password: false,
+      gender: true,
+      role: true,
+      photoURL: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  })) as TUser[];
 
   res.send({
     success: true,
     message: "All users fetched successfully!",
-    total: rowCount || 0,
-    data: rows,
+    total: result.length,
+    data: result,
   });
 };
 
@@ -32,23 +41,20 @@ export const getUserProfile = async (
   req: Request,
   res: Response<TSuccessResponse<TUser>>,
 ) => {
-  const { uid } = req.session.user;
+  const { uid, email } = req.session.user;
 
-  const result = await pool.query<TUser>(
-    `SELECT uid, name, email, gender, role, photo_url, created_at, updated_at
-      FROM users
-      WHERE uid = $1;`,
-    [uid],
-  );
+  const result = await prisma.users.findFirst({
+    where: { uid, email },
+  });
 
-  const user = result.rows[0];
+  if (!result) throw new UnauthorizedError("User not found!");
 
-  if (!user) throw new UnauthorizedError("User not found!");
+  const { password, ...user } = result;
 
   res.send({
     success: true,
     message: "User profile fetched successfully!",
-    data: user,
+    data: user as TUser,
   });
 };
 
@@ -56,26 +62,24 @@ export const registerUser = async (
   req: Request<{}, {}, TCreateUser>,
   res: Response<TSuccessResponse<Pick<TUser, "uid">>>,
 ) => {
-  const { name, email, password, gender, photo_url } = req.body;
+  const { name, email, password, gender, photoURL } = req.body;
   const hashedPassword = await hashPassword(password);
-  const values = [
-    name,
-    email,
-    hashedPassword,
-    gender,
-    USER_ROLE.CUSTOMER,
-    photo_url,
-  ];
 
-  const query = `INSERT INTO users (name, email, password, gender, role, photo_url)
-    VALUES ($1, $2, $3, $4, $5, $6) RETURNING uid;`;
-
-  const { rows } = await pool.query<Pick<TUser, "uid">>(query, values);
+  const { uid } = await prisma.users.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      gender,
+      role: USER_ROLE.CUSTOMER,
+      photoURL,
+    },
+  });
 
   res.status(201).send({
     success: true,
     message: "User created successfully!",
-    data: rows[0]!,
+    data: { uid },
   });
 };
 
@@ -85,22 +89,22 @@ export const loginUser = async (
 ) => {
   const { email, password } = req.body;
 
-  const result = await pool.query<TUser>(
-    `SELECT * FROM users WHERE email = $1;`,
-    [email],
-  );
-  const user = result.rows[0];
+  const user = await prisma.users.findFirst({
+    where: {
+      email,
+    },
+  });
 
   if (!user) throw new UnauthorizedError("Invalid credentials!");
 
-  const isValidPassword = await comparePasswords(password, user.password || "");
+  const isValidPassword = await comparePasswords(password, user.password);
 
   if (!isValidPassword) throw new UnauthorizedError("Invalid credentials!");
 
   req.session.user = {
     uid: user.uid,
     email: user.email,
-    role: user.role,
+    role: user.role as TUserRole,
   };
 
   res.send({
@@ -110,7 +114,7 @@ export const loginUser = async (
 };
 
 export const logoutUser = async (req: Request, res: Response) => {
-  req.session.destroy((err) => {
+  req.session.destroy((err: unknown) => {
     if (err) throw err;
 
     res.send({

@@ -1,11 +1,10 @@
 import type { TCreateUser, TUserRole } from "@/schemas/user.js";
 
-export type TUser = Omit<TCreateUser, "password"> & {
+export type TUser = TCreateUser & {
   uid: string;
-  password?: string;
   role: TUserRole;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type TSessionUser = Pick<TUser, "uid" | "email" | "role">;

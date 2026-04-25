@@ -16,7 +16,7 @@ import { Router } from "express";
 
 const authRoutes = Router();
 
-authRoutes.get("/all-users", findAllUsers);
+authRoutes.get("/all-users", authorize([USER_ROLE.MANAGER]), findAllUsers);
 
 authRoutes.get("/profile", authorize(Object.values(USER_ROLE)), getUserProfile);
 
