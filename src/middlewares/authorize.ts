@@ -7,11 +7,10 @@ export const authorize = (allowedRoles: TUserRole[]) => {
     try {
       const user = req.session.user;
 
-      if (!user) throw new ForbiddenError("You are not logged in!");
-
       allowedRoles = allowedRoles.map((r) => r.toUpperCase() as TUserRole);
+      const isAllowed = allowedRoles.includes(user?.role as TUserRole);
 
-      if (!allowedRoles.includes(user.role)) {
+      if (!user || !isAllowed) {
         throw new ForbiddenError(
           "You don't have permission to access this resource!",
         );

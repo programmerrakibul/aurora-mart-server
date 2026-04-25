@@ -6,9 +6,9 @@ import {
   type TUserRole,
 } from "@/schemas/user.js";
 import type { TSuccessResponse } from "@/types/index.js";
-import type { TUser } from "@/types/user.js";
+import type { TSessionUser, TUser } from "@/types/user.js";
 import type { Request, Response } from "express";
-import { UnauthorizedError } from "@/utils/error.js";
+import { ConflictError, UnauthorizedError } from "@/utils/error.js";
 import prisma from "@/config/prisma";
 
 export const findAllUsers = async (
@@ -41,7 +41,7 @@ export const getUserProfile = async (
   req: Request,
   res: Response<TSuccessResponse<TUser>>,
 ) => {
-  const { uid, email } = req.session.user;
+  const { uid, email } = req.session.user as TSessionUser;
 
   const result = await prisma.users.findFirst({
     where: { uid, email },
@@ -63,6 +63,14 @@ export const registerUser = async (
   res: Response<TSuccessResponse<Pick<TUser, "uid">>>,
 ) => {
   const { name, email, password, gender, photoURL } = req.body;
+  const user = await prisma.users.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (user) throw new ConflictError("Email already in use!");
+
   const hashedPassword = await hashPassword(password);
 
   const { uid } = await prisma.users.create({

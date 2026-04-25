@@ -1,7 +1,7 @@
-import { PrismaClient } from "@/generated/prisma/client.js";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import envConfig, { DATABASE_URL } from "./env.js";
 import { NODE_ENV } from "@/schemas/env.js";
+import { PrismaClient } from "@/generated/prisma/client.js";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;

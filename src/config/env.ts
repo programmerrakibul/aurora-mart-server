@@ -16,13 +16,7 @@ if (!result.success) {
   throw new ApiError(message, name, 422, fieldErrors);
 }
 
-export const {
-  NODE_ENV,
-  PORT,
-  SESSION_SECRET,
-  DATABASE_URL,
-  DIRECT_URL,
-} = result.data;
+export const { NODE_ENV, PORT, SESSION_SECRET, DATABASE_URL } = result.data;
 
 const envConfig = result.data;
 export default envConfig;

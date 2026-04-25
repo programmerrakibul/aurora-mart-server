@@ -11,22 +11,20 @@ export const envSchema = z.object({
     Object.values(NODE_ENV),
     "Invalid NODE_ENV value!",
   ),
+
   PORT: z.coerce
     .number("Invalid PORT value!")
     .positive("PORT value must be a positive number!")
     .optional()
     .default(8000),
+
   DATABASE_URL: z
     .string("Invalid DATABASE_URL value!")
     .startsWith("postgresql://", "Invalid POSTGRESQL DATABASE_URL value!")
     .includes("-pooler", "DATABASE_URL must be a pooling connection!")
     .includes("sslmode=require", "DATABASE_URL must contain -sslmode require!")
     .includes(".neon.tech", "DATABASE must be a Neon database!"),
-  DIRECT_URL: z
-    .string("Invalid DATABASE_URL value!")
-    .startsWith("postgresql://", "Invalid POSTGRESQL DATABASE_URL value!")
-    .includes("sslmode=require", "DATABASE_URL must contain -sslmode require!")
-    .includes(".neon.tech", "DATABASE must be a Neon database!"),
+
   SESSION_SECRET: z
     .string("Invalid SESSION_SECRET value!")
     .trim()

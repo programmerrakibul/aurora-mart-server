@@ -2,13 +2,13 @@
   "name": "auroramart-server",
   "version": "1.0.0",
   "description": "This is a server for AuroraMart, an e-commerce platform. It provides APIs for user authentication, product management, and order processing.",
-  "main": "dist/index.mjs",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.mjs",
-    "build": "rm -rf dist && tsdown",
-    "vercel-build": "npm run build",
-    "dev": "tsdown --watch",
-    "clean": "rm -rf dist"
+    "start": "node dist/index.js",
+    "build": "rm -rf dist && tsc && tsc-alias --resolve-full-paths",
+    "dev": "tsx --watch src/index.ts",
+    "clean": "rm -rf dist",
+    "vercel-build": "prisma generate && npm run build"
   },
   "keywords": [
     "e-commerce",
@@ -40,7 +40,6 @@
     "@types/pg": "^8.20.0",
     "prisma": "^7.8.0",
     "tsc-alias": "^1.8.16",
-    "tsdown": "^0.21.10",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   }
