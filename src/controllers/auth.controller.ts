@@ -16,16 +16,8 @@ export const findAllUsers = async (
   res: Response<TSuccessResponse<TUser[]>>,
 ) => {
   const result = (await prisma.users.findMany({
-    select: {
-      uid: true,
-      name: true,
-      email: true,
-      password: false,
-      gender: true,
-      role: true,
-      photoURL: true,
-      createdAt: true,
-      updatedAt: true,
+    omit: {
+      password: true,
     },
     take: 10,
     orderBy: { createdAt: "desc" },
@@ -45,13 +37,14 @@ export const getUserProfile = async (
 ) => {
   const { uid, email } = req.session.user as TSessionUser;
 
-  const result = await prisma.users.findFirst({
+  const user = await prisma.users.findFirst({
     where: { uid, email },
+    omit: {
+      password: true,
+    },
   });
 
-  if (!result) throw new UnauthorizedError("User not found!");
-
-  const { password, ...user } = result;
+  if (!user) throw new UnauthorizedError("User not found!");
 
   res.send({
     success: true,
