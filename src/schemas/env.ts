@@ -7,10 +7,9 @@ export const NODE_ENV = {
 } as const;
 
 export const envSchema = z.object({
-  NODE_ENV: z.enum<TNodeEnv[]>(
-    Object.values(NODE_ENV),
-    "Invalid NODE_ENV value!",
-  ),
+  NODE_ENV: z
+    .enum<TNodeEnv[]>(Object.values(NODE_ENV), "Invalid NODE_ENV value!")
+    .transform((val) => val.toLowerCase() as TNodeEnv),
 
   PORT: z.coerce
     .number("Invalid PORT value!")
