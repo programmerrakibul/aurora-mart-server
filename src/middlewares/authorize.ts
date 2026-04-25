@@ -1,5 +1,5 @@
 import type { TUserRole } from "@/schemas/user.js";
-import { ForbiddenError } from "@/utils/error.js";
+import { ForbiddenError, UnauthorizedError } from "@/utils/error.js";
 import type { Request, Response, NextFunction } from "express";
 
 export const authorize = (allowedRoles: TUserRole[]) => {
@@ -7,10 +7,12 @@ export const authorize = (allowedRoles: TUserRole[]) => {
     try {
       const user = req.session.user;
 
+      if (!user) throw new UnauthorizedError("Unauthorized Access!");
+
       allowedRoles = allowedRoles.map((r) => r.toUpperCase() as TUserRole);
       const isAllowed = allowedRoles.includes(user?.role as TUserRole);
 
-      if (!user || !isAllowed) {
+      if (!isAllowed) {
         throw new ForbiddenError(
           "You don't have permission to access this resource!",
         );

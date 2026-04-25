@@ -27,6 +27,8 @@ export const findAllUsers = async (
       createdAt: true,
       updatedAt: true,
     },
+    take: 10,
+    orderBy: { createdAt: "desc" },
   })) as TUser[];
 
   res.send({
